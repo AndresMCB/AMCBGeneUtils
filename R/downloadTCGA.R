@@ -117,7 +117,7 @@ downloadTCGA <- function(project="TCGA-BRCA"
   Counts <- assay(data)
   res$HTSeq_Counts <-as.data.frame(t(Counts))
   if(normCounts){
-    dataNorm <- TCGAanalyze_Normalization(t(HTSeq_Counts)
+    dataNorm <- TCGAanalyze_Normalization(t(res$HTSeq_Counts)
                                           , geneInfoHT
                                           , method = "gcContent")
     res$HTSeq_Norm_Counts <- as.data.frame(t(dataNorm))
