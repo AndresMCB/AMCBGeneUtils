@@ -92,7 +92,7 @@ downloadTCGA <- function(project="TCGA-BRCA"
   data <- GDCprepare(GDCquery)
 
   ## keep data with selected vital status
-  index <- which(data$vital_status==vital_status)
+  index <- which(data$vital_status%in%vital_status)
   data <- data[,index]
   res <- list()
 
