@@ -1,0 +1,7 @@
+createHugoMatrix()
+Genes <- changeGeneId(colnames(BRCA.deceased$HTSeq_Counts))
+asdf <- updateGeneSymbol(EMT.mRs$V1)
+qwer <- updateGeneSymbol(c("A2MP1","C19orf76","dummy","KIAA0863","AA","CPAMD9"))
+changeGeneId(qwer[,2],from = "HGNC.symbol")
+a <- changeMatrixIds(BRCA.deceased$HTSeq_Norm_Counts)
+b <- changeMatrixIds(a, from = "HGNC.symbol",to = "Ensembl.ID")
