@@ -3,14 +3,14 @@ rankByMut <- function(genesIds, project = "BRCA"){
   switch(project,
     BRCA={
       load(system.file("extdata"
-                       , "TCGA_BRCA_TP.rda"
+                       , "BRCA.MAF.hg38.rda"
                        , package = "AMCBGeneUtils"
                        , mustWork = TRUE))
       rank <- sapply(genesIds
                      ,function(x,mutations){
                        res <- sum(mutations%in%x)
                      }
-                     , TCGA_BRCA_TP$MAF.hg38$Gene)
+                     , BRCA.MAF.hg38$Gene)
     },
     GBM={
 
