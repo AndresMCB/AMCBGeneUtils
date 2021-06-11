@@ -1,4 +1,4 @@
-changeGeneId <- function(IDs, from = "Ensembl.ID"
+changeGeneId <- function(IDs, from = "HGNC.symbol"
                           , to=c("Ensembl.ID","HGNC.ID","HGNC.symbol","NCBI.ID")){
   if (!requireNamespace("tidyverse"))
     install.packages('tidyverse')
