@@ -25,8 +25,13 @@ updateGeneSymbol <- function(IDs){
   b <- do.call(what = rbind,args = b)
   colnames(b) <- c("HGNC.symbol","symbol")
 
-  index <- match(res[,1],as.matrix(b[,2]))
-  res[,2] <- b[index,1]
+  keepIndex <- IDs%in%b[,"HGNC.symbol"]
+  res[keepIndex,2] <- res[keepIndex,1]
+  res[!keepIndex,2] <- b[match(res[!keepIndex,1]
+                               ,as.matrix(b[,2])),1]
+
+  #index <- match(res[,1],as.matrix(b[,2]))
+  #res[,2] <- b[index,1]
   return(res)
 
 }
