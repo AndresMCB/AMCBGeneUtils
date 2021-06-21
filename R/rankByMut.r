@@ -1,23 +1,37 @@
-rankByMut <- function(genesIds, project = "BRCA"){
+rankByMut <- function(genesIds, project = "BRCA", patient_IDs=NULL){
 
   switch(project,
     BRCA={
-      load(system.file("extdata"
+    x = load(system.file("extdata"
                        , "BRCA.MAF.hg38.rda"
                        , package = "AMCBGeneUtils"
                        , mustWork = TRUE))
-      rank <- sapply(genesIds
-                     ,function(x,mutations){
-                       res <- sum(mutations%in%x)
-                     }
-                     , BRCA.MAF.hg38$Gene)
+
+    MAF.hg38 = get(x)
+    rm(x)
+
     },
     GBM={
 
     }
   )
 
-  rank <- as.data.frame(rank)
-  row.names(rank) <- genesIds
-  return(rank)
+  if (!is.null(patient_IDs)){
+    MAF.hg38 <- MAF.hg38%>%
+      mutate(patient=str_trunc(Tumor_Sample_Barcode,12, "right", ellipsis = ""),.before = 1)%>%
+      filter(patient%in%patient_IDs)
+  }
+
+  aux <- MAF.hg38%>%
+    filter(Gene%in%genesIds)%>%
+    count(Ensembl.ID=Gene, name = "rank")
+
+  output <- data.frame("Ensembl.ID"=genesIds)
+  output <- left_join(x=output,y=aux,by="Ensembl.ID")
+  output[is.na(output$rank),"rank"] <- 0
+  output <- output%>%
+    arrange(desc(rank))
+
+  row.names(output) <- output$Ensembl.ID
+  return(output)
 }
