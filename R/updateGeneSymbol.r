@@ -27,6 +27,7 @@ updateGeneSymbol <- function(IDs){
 
   previous <- do.call(what = rbind,args = aux)
   colnames(previous) <- c("HGNC.symbol","IDs")
+  previous[,2] <-toupper(previous[,2])
 
   # Tidying up string data for Alias
   Alias <- HGNC.Approved%>%
@@ -46,44 +47,42 @@ updateGeneSymbol <- function(IDs){
 
   Alias <- do.call(what = rbind,args = aux)
   colnames(Alias) <- c("HGNC.symbol","IDs")
+  Alias[,2] <- toupper(Alias[,2])
+  Alias <- as_tibble(Alias)%>%
+    filter(!IDs%in%previous[,"IDs"])
 
+  previous <- rbind(previous,Alias)
+
+  rm(Alias, aux)
+  gc()
 
   # Find those IDs already in HGNC$Approved.symbol
   res[,1] <- IDs
-  index <- res[,1]%in%HGNC.Approved$Approved.symbol
+  index <- tolower(res[,1])%in%tolower(HGNC.Approved$Approved.symbol)
   res[index,2] <- res[index,1]
 
   # Check if IDs are in previous
-  temp <- left_join(as_tibble(res[!index,1, drop=F])
-                    ,as_tibble(previous), by = "IDs")
+  temp <- as_tibble(res)%>%
+    filter(is.na(HGNC.symbol))%>%
+    mutate(IDs = toupper(IDs))
 
-  if(sum(duplicated(temp$IDs))>0){
-    message("There are duplicated gene symbols. Keeping the first ocurrence.")
-    message("duplicated genes:")
-    print(temp$IDs[duplicated(temp$IDs)])
-    temp <- temp[!duplicated(temp$IDs),]
+  aux <- left_join(temp,previous, by = "IDs")
+
+  if(nrow(aux) > nrow(temp)){
+    warning(paste0("The following genes symbols are duplicated \n"
+                   ,"and/or maps to a more than one updated symbol.\n"
+                   ,na.omit(aux[duplicated(aux[,1]),1])
+                   ,"\nThis can leads to an incorrect updated symbol.\n"
+                   ,"Please check your input gene IDs"))
   }
+
+  aux <- aux %>% distinct(IDs, .keep_all = T)%>%
+    transmute(IDs,HGNC.symbol = HGNC.symbol.y)
+
+  temp <- left_join(temp,aux, by ="IDs")%>%
+    transmute(IDs,HGNC.symbol = HGNC.symbol.y)
+
   res[!index,2] <- temp$HGNC.symbol
-
-  # Check if IDs are in Alias
-  index <- is.na(res[,2])
-  if(sum(index)>0){
-    temp <- left_join(as_tibble(res[index,1, drop=F])
-                      ,as_tibble(Alias), by = "IDs")
-
-    if(sum(duplicated(temp$IDs))>0){
-      message("There are duplicated gene symbols. Keeping the first ocurrence.")
-      message("duplicated genes:")
-      print(temp$IDs[duplicated(temp$IDs)])
-      temp <- temp[!duplicated(temp$IDs),]
-    }
-    res[index,2] <- temp$HGNC.symbol
-  }
-
-
-
-  aux <- res[!index,2]
-  aux %in% previous[,2]
 
 
 

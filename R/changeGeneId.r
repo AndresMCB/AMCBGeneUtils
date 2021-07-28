@@ -45,6 +45,7 @@ changeGeneId <- function(IDs, from = "HGNC.symbol"
   colnames(res) <- c("IDs",to)
 
   res<-as_tibble(res)
+  res[res==""] <- NA
   return(res)
 
 }
