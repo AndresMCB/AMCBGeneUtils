@@ -4,7 +4,7 @@ changeGeneId <- function(IDs, from = "HGNC.symbol"
     install.packages('tidyverse')
   library(tidyverse)
   HGNC <- AMCBGeneUtils::HGNC
-
+  IDs <- sapply(IDs, as.character,simplify = T)
   IDs <- str_trim(IDs)
   IDs.in <- IDs
   res <- matrix(nrow = length(IDs), ncol = length(to)+1)
