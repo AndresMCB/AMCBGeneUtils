@@ -1,2 +1,2 @@
 # AMCBGeneUtils
-Toolbox for gene expression presprocessing
+Toolbox for gene expression pre-processing
