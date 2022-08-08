@@ -19,12 +19,12 @@ rankByMut <- function(genesIds, project = "BRCA", patient_IDs=NULL){
   if (!is.null(patient_IDs)){
     MAF.hg38 <- MAF.hg38%>%
       mutate(patient=str_trunc(Tumor_Sample_Barcode,12, "right", ellipsis = ""),.before = 1)%>%
-      filter(patient%in%patient_IDs)
+      dplyr::filter(patient%in%patient_IDs)
   }
 
   aux <- MAF.hg38%>%
-    filter(Gene%in%genesIds)%>%
-    count(Ensembl.ID=Gene, name = "rank")
+    dplyr::filter(Gene%in%genesIds)%>%
+    dplyr::count(Ensembl.ID=Gene, name = "rank")
 
   output <- data.frame("Ensembl.ID"=genesIds)
   output <- left_join(x=output,y=aux,by="Ensembl.ID")
